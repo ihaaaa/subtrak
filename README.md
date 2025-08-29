@@ -38,15 +38,6 @@ Our solution is:
 
 ---
 
-## 🚀 **How to Run the Project**
-1. Go to the repository on GitHub.
-2. Click the green **Code** button and **Download ZIP**.
-3. Extract the ZIP on your computer.
-4. Open **index.html** in your browser.
-5. Done ✅
-
----
-
 ## 👨‍💻 **Team**
 - Iha Singh - team leader
 - Sagar Singh
