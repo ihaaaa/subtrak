@@ -16,16 +16,20 @@
     /* Sidebar */
     .sidebar {
       width: 220px;
-      background-color: #0d1117;
+      background: linear-gradient(180deg, #0f172a, #1e293b);
       padding: 20px;
       height: 100vh;
       border-right: 1px solid #1f2937;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.4);
+      border-radius: 0 16px 16px 0;
     }
     .sidebar h2 {
       color: #60a5fa;
       font-size: 1.6rem;
       font-weight: 600;
       margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 1px;
     }
     .sidebar ul {
       list-style: none;
@@ -38,11 +42,12 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 14px;
-      border-radius: 8px;
+      padding: 12px 16px;
+      border-radius: 12px;
       transition: background-color 0.3s ease, transform 0.2s ease;
       font-size: 0.95rem;
       color: #94a3b8;
+      font-weight: 500;
     }
     .sidebar ul li:hover {
       background-color: #1f2937;
@@ -50,16 +55,17 @@
       color: #f8fafc;
     }
     .sidebar ul li.active {
-      background-color: #1e293b;
+      background: linear-gradient(90deg, #1e293b, #334155);
       box-shadow: 0 0 10px #60a5fa55;
       color: #f8fafc;
     }
     .sidebar ul li::before {
-      content: "🔹";
+      content: "•";
       display: inline-block;
-      font-size: 1rem;
+      font-size: 0.8rem;
       line-height: 1;
       color: #60a5fa;
+      margin-right: 6px;
     }
     /* Main content */
     .main {
@@ -215,9 +221,7 @@
     <h2>SubTrak</h2>
     <ul>
       <li class="active">Dashboard</li>
-      <li>Subscriptions</li>
       <li>Analytics</li>
-      <li>AI Insights</li>
       <li>Settings</li>
     </ul>
   </div>
@@ -245,6 +249,22 @@
         </div>
       </div>
 
+      <div class="subscriptions">
+  <h3>Add Subscription</h3>
+  <form id="addSubForm" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+    <input type="text" id="subName" placeholder="Name" required style="flex:1; padding:8px; border-radius:6px; border:none;">
+    <input type="number" id="subCost" placeholder="Cost (₹)" required style="flex:1; padding:8px; border-radius:6px; border:none;">
+    <input type="date" id="subBilling" required style="flex:1; padding:8px; border-radius:6px; border:none;">
+    <select id="subUsage" required style="flex:1; padding:8px; border-radius:6px; border:none;">
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <input type="url" id="subIcon" placeholder="Icon URL (optional)" style="flex:2; padding:8px; border-radius:6px; border:none;">
+    <button type="submit" style="padding:8px 16px; border:none; border-radius:6px; background:#60a5fa; color:white; cursor:pointer;">Add</button>
+  </form>
+</div>
+
       <!-- Subscriptions Cards Grid -->
       <div class="subscriptions">
         <h3>Your Subscriptions</h3>
@@ -263,6 +283,9 @@
       <p>Visual breakdown of your subscription spending.</p>
       <div style="height:400px;">
         <canvas id="analyticsChart"></canvas>
+      </div>
+      <div style="height:400px; margin-top: 30px;">
+        <canvas id="pieChart"></canvas>
       </div>
     </div>
 
@@ -308,10 +331,23 @@
               <p><strong>Next Billing:</strong> ${s.billing}</p>
               <p><strong>Usage:</strong> <span class="usage-${s.usage}">${s.usage}</span></p>
             </div>
+            <button class="delete-sub" data-name="${s.name}" style="padding:6px 10px; border:none; border-radius:6px; background:#ef4444; color:white; cursor:pointer;">✖</button>
           </div>`);
       });
       document.getElementById("totalCost").innerText = `₹${total}`;
       document.getElementById("subCount").innerText = subs.length;
+
+      // Attach delete event listeners
+      document.querySelectorAll(".delete-sub").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const name = btn.getAttribute("data-name");
+          const index = subs.findIndex(sub => sub.name === name);
+          if (index > -1) {
+            subs.splice(index, 1);
+            renderSubs();
+          }
+        });
+      });
 
       // AI Recommendations (dummy logic)
       const aiList = document.getElementById("aiList");
@@ -325,6 +361,21 @@
       });
     }
     renderSubs();
+
+    document.getElementById("addSubForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("subName").value.trim();
+      const cost = parseFloat(document.getElementById("subCost").value);
+      const billing = document.getElementById("subBilling").value;
+      const usage = document.getElementById("subUsage").value;
+      const icon = document.getElementById("subIcon").value.trim() || "https://via.placeholder.com/56";
+
+      if (name && cost && billing && usage) {
+        subs.push({ name, cost, billing, usage, icon });
+        renderSubs();
+        this.reset();
+      }
+    });
 
     document.querySelectorAll(".sidebar ul li").forEach(item => {
       item.addEventListener("click", () => {
@@ -349,15 +400,16 @@
     });
 
     let analyticsChartInstance = null;
+    let pieChartInstance = null;
 
     function renderAnalytics() {
-      const canvas = document.getElementById("analyticsChart");
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
+      const barCanvas = document.getElementById("analyticsChart");
+      if (!barCanvas) return;
+      const barCtx = barCanvas.getContext("2d");
       if (analyticsChartInstance) {
         analyticsChartInstance.destroy();
       }
-      analyticsChartInstance = new Chart(ctx, {
+      analyticsChartInstance = new Chart(barCtx, {
         type: 'bar',
         data: {
           labels: subs.map(s => s.name),
@@ -388,6 +440,42 @@
           scales: {
             x: { ticks: { color: '#cbd5e1' } },
             y: { ticks: { color: '#cbd5e1' } }
+          }
+        }
+      });
+
+      const pieCanvas = document.getElementById("pieChart");
+      if (!pieCanvas) return;
+      const pieCtx = pieCanvas.getContext("2d");
+      if (pieChartInstance) {
+        pieChartInstance.destroy();
+      }
+      pieChartInstance = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: subs.map(s => s.name),
+          datasets: [{
+            data: subs.map(s => s.cost),
+            backgroundColor: [
+              '#60a5fa',
+              '#22c55e',
+              '#f59e0b',
+              '#ef4444',
+              '#8b5cf6',
+              '#ec4899'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#cbd5e1' } },
+            title: {
+              display: true,
+              text: 'Cost Distribution (%)',
+              color: '#e0e7ff'
+            }
           }
         }
       });
