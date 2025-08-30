@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SubTrak - Subscription Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #0f172a;
+      color: #e0e7ff;
+      display: flex;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #111827;
+      padding: 20px;
+      height: 100vh;
+    }
+    .sidebar h2 {
+      color: #60a5fa;
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar ul li {
+      margin: 16px 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: background-color 0.25s ease;
+      font-size: 1rem;
+      color: #cbd5e1;
+    }
+    .sidebar ul li:hover {
+      background-color: #1e293b;
+      box-shadow: 0 0 8px #60a5faaa;
+    }
+    .sidebar ul li::before {
+      content: "🔹";
+      display: inline-block;
+      font-size: 1rem;
+      line-height: 1;
+      color: #60a5fa;
+    }
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+    .header {
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #e0e7ff;
+      margin: 0 0 6px 0;
+    }
+    .header p {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin: 0;
+    }
+    .cards {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      padding: 18px;
+      border-radius: 12px;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
+      color: #e0e7ff;
+      background-color: #1e293b;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 0 12px #60a5faaa;
+    }
+    .card:nth-child(1) {
+      background-color: #273449;
+    }
+    .card:nth-child(2) {
+      background-color: #1f3e2f;
+    }
+    .card:nth-child(3) {
+      background-color: #2c2a5a;
+    }
+    .card h3 {
+      font-weight: 400;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    .card p {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .subscriptions, .ai-box {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
+      transition: box-shadow 0.3s ease;
+    }
+    .subscriptions:hover, .ai-box:hover {
+      box-shadow: 0 0 12px #60a5faaa;
+    }
+    .sub-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 15px;
+    }
+    .sub-card {
+      background: #1f2937;
+      padding: 18px 22px;
+      border-radius: 12px;
+      box-sizing: border-box;
+      color: #e0e7ff;
+      font-size: 1rem;
+      line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(96, 165, 250, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .sub-card:hover {
+      background-color: #29304e;
+      box-shadow: 0 0 10px #60a5faaa;
+    }
+    .sub-icon {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 1px 6px rgba(96, 165, 250, 0.5);
+      background-color: #111827;
+    }
+    .sub-details {
+      flex: 1;
+    }
+    .sub-card h4 {
+      margin: 0 0 6px 0;
+      color: #e0e7ff;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+    .sub-card p {
+      margin: 3px 0;
+      font-size: 1rem;
+    }
+    .usage-High {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    .usage-Medium {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+    .usage-Low {
+      color: #ef4444;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #334155;
+      text-align: left;
+    }
+    .ai-box h3 {
+      margin-bottom: 10px;
+      color: #e0e7ff;
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>SubTrak</h2>
+    <ul>
+      <li>Dashboard</li>
+      <li>Subscriptions</li>
+      <li>Analytics</li>
+      <li>AI Insights</li>
+      <li>Settings</li>
+    </ul>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div class="main">
+    <div class="header">
+      <h1>Welcome back, Iha 👋</h1>
+      <p>Here’s a quick look at your subscriptions and insights.</p>
+    </div>
+    <!-- Stat Cards -->
+    <div class="cards">
+      <div class="card">
+        <h3>Total Monthly Cost</h3>
+        <p id="totalCost">₹0</p>
+      </div>
+      <div class="card">
+        <h3>This Month's Savings</h3>
+        <p>₹640</p>
+      </div>
+      <div class="card">
+        <h3>Active Subscriptions</h3>
+        <p id="subCount">0</p>
+      </div>
+    </div>
+
+    <!-- Subscriptions Cards Grid -->
+    <div class="subscriptions">
+      <h3>Your Subscriptions</h3>
+      <div id="subGrid" class="sub-grid"></div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="ai-box">
+      <h3>AI Recommendations</h3>
+      <ul id="aiList"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Dummy subscription data with icon URLs (using Unsplash placeholders)
+    const subs = [
+      { name: "Netflix", cost: 649, billing: "2024-12-25", usage: "High", icon: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1674&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+      { name: "Spotify", cost: 119, billing: "2024-12-30", usage: "High", icon: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+      { name: "Amazon Prime", cost: 1499, billing: "2025-01-15", usage: "Medium", icon: "https://images.unsplash.com/photo-1662466767333-433cc73ebbb7?q=80&w=2128&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+      { name: "Jio Hotstar", cost: 899, billing: "2025-01-08", usage: "Low", icon: "https://static.vecteezy.com/system/resources/previews/056/505/637/non_2x/jiohotstar-app-icon-on-transparent-background-free-png.png" },
+      { name: "Zomato Gold", cost: 149, billing: "2024-12-28", usage: "High", icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgQeL8mQBREJm8wA-INLpRhs3dU3K2gJqEXMYAHMLo1R4cYdb4z-KAVlnA_pG_QMijnVE&usqp=CAU" },
+      { name: "YouTube Premium", cost: 129, billing: "2025-01-05", usage: "Medium", icon: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }
+    ];
+
+    function renderSubs() {
+      const subGrid = document.getElementById("subGrid");
+      let total = 0;
+      subGrid.innerHTML = '';
+      subs.forEach(s => {
+        total += s.cost;
+        subGrid.insertAdjacentHTML('beforeend', `
+          <div class="sub-card">
+            <img src="${s.icon}" alt="${s.name} icon" class="sub-icon" loading="lazy" />
+            <div class="sub-details">
+              <h4>${s.name}</h4>
+              <p><strong>Cost:</strong> ₹${s.cost}</p>
+              <p><strong>Next Billing:</strong> ${s.billing}</p>
+              <p><strong>Usage:</strong> <span class="usage-${s.usage}">${s.usage}</span></p>
+            </div>
+          </div>`);
+      });
+      document.getElementById("totalCost").innerText = `₹${total}`;
+      document.getElementById("subCount").innerText = subs.length;
+
+      // AI Recommendations (dummy logic)
+      const aiList = document.getElementById("aiList");
+      aiList.innerHTML = '';
+      subs.forEach(s => {
+        if (s.usage === "Low") {
+          aiList.insertAdjacentHTML('beforeend', `<li>Cancel ${s.name} → Save ₹${s.cost * 12}/year</li>`);
+        } else if (s.cost > 500) {
+          aiList.insertAdjacentHTML('beforeend', `<li>Switch ${s.name} to annual plan → Save ₹${Math.round(s.cost * 2)}/year</li>`);
+        }
+      });
+    }
+    renderSubs();
+  </script>
+
+</body>
+</html>
