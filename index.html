@@ -12,7 +12,7 @@
       color: #f1f5f9;
       display: flex;
     }
-    /* Sidebar */
+
     .sidebar {
       width: 220px;
       background-color: #0b0f19;
@@ -51,7 +51,7 @@
       line-height: 1;
       color: #38bdf8;
     }
-    /* Main content */
+   
     .main {
       flex: 1;
       padding: 20px;
@@ -152,7 +152,7 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
+
   <div class="sidebar">
     <h2>SubTrak</h2>
     <ul>
@@ -164,9 +164,9 @@
     </ul>
   </div>
 
-  <!-- Main Dashboard -->
+
   <div class="main">
-    <!-- Stat Cards -->
+
     <div class="cards">
       <div class="card">
         <h3>Total Monthly Cost</h3>
@@ -182,13 +182,12 @@
       </div>
     </div>
 
-    <!-- Subscriptions Cards Grid -->
+
     <div class="subscriptions">
       <h3>Your Subscriptions</h3>
       <div id="subGrid" class="sub-grid"></div>
     </div>
 
-    <!-- AI Recommendations -->
     <div class="ai-box">
       <h3>AI Recommendations</h3>
       <ul id="aiList"></ul>
@@ -196,7 +195,7 @@
   </div>
 
   <script>
-    // Dummy subscription data
+
     const subs = [
       { name: "Netflix", cost: 649, billing: "2024-12-25", usage: "High" },
       { name: "Spotify", cost: 119, billing: "2024-12-30", usage: "High" },
@@ -223,7 +222,7 @@
       document.getElementById("totalCost").innerText = "₹" + total;
       document.getElementById("subCount").innerText = subs.length;
 
-      // AI Recommendations (dummy logic)
+  
       const aiList = document.getElementById("aiList");
       aiList.innerHTML = '';
       subs.forEach(s => {
