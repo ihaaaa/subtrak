@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>SubTrak - Subscription Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
     body {
@@ -194,6 +195,12 @@
       font-weight: 600;
       font-size: 1.2rem;
     }
+    .page { display: none; }
+    .page.active { display: block; }
+    .sidebar ul li.active {
+      background-color: #1e293b;
+      box-shadow: 0 0 8px #60a5faaa;
+    }
   </style>
 </head>
 <body>
@@ -202,7 +209,7 @@
   <div class="sidebar">
     <h2>SubTrak</h2>
     <ul>
-      <li>Dashboard</li>
+      <li class="active">Dashboard</li>
       <li>Subscriptions</li>
       <li>Analytics</li>
       <li>AI Insights</li>
@@ -212,36 +219,61 @@
 
   <!-- Main Dashboard -->
   <div class="main">
-    <div class="header">
-      <h1>Welcome back, Iha 👋</h1>
-      <p>Here’s a quick look at your subscriptions and insights.</p>
-    </div>
-    <!-- Stat Cards -->
-    <div class="cards">
-      <div class="card">
-        <h3>Total Monthly Cost</h3>
-        <p id="totalCost">₹0</p>
+    <div id="dashboardPage" class="page active">
+      <div class="header">
+        <h1>Welcome back, Iha 👋</h1>
+        <p>Here’s a quick look at your subscriptions and insights.</p>
       </div>
-      <div class="card">
-        <h3>This Month's Savings</h3>
-        <p>₹640</p>
+      <!-- Stat Cards -->
+      <div class="cards">
+        <div class="card">
+          <h3>Total Monthly Cost</h3>
+          <p id="totalCost">₹0</p>
+        </div>
+        <div class="card">
+          <h3>This Month's Savings</h3>
+          <p>₹640</p>
+        </div>
+        <div class="card">
+          <h3>Active Subscriptions</h3>
+          <p id="subCount">0</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Active Subscriptions</h3>
-        <p id="subCount">0</p>
+
+      <!-- Subscriptions Cards Grid -->
+      <div class="subscriptions">
+        <h3>Your Subscriptions</h3>
+        <div id="subGrid" class="sub-grid"></div>
+      </div>
+
+      <!-- AI Recommendations -->
+      <div class="ai-box">
+        <h3>AI Recommendations</h3>
+        <ul id="aiList"></ul>
       </div>
     </div>
 
-    <!-- Subscriptions Cards Grid -->
-    <div class="subscriptions">
-      <h3>Your Subscriptions</h3>
-      <div id="subGrid" class="sub-grid"></div>
+    <div id="analyticsPage" class="page">
+      <h2>Analytics</h2>
+      <p>Visual breakdown of your subscription spending.</p>
+      <div style="height:400px;">
+        <canvas id="analyticsChart"></canvas>
+      </div>
     </div>
 
-    <!-- AI Recommendations -->
-    <div class="ai-box">
-      <h3>AI Recommendations</h3>
-      <ul id="aiList"></ul>
+    <div id="subscriptionsPage" class="page">
+      <h2>Subscriptions</h2>
+      <p>Coming Soon...</p>
+    </div>
+
+    <div id="aiPage" class="page">
+      <h2>AI Insights</h2>
+      <p>Coming Soon...</p>
+    </div>
+
+    <div id="settingsPage" class="page">
+      <h2>Settings</h2>
+      <p>Coming Soon...</p>
     </div>
   </div>
 
@@ -288,6 +320,73 @@
       });
     }
     renderSubs();
+
+    document.querySelectorAll(".sidebar ul li").forEach(item => {
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".sidebar ul li").forEach(li => li.classList.remove("active"));
+        item.classList.add("active");
+
+        const text = item.textContent.trim();
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        if (text === "Dashboard") {
+          document.getElementById("dashboardPage").classList.add("active");
+        } else if (text === "Analytics") {
+          document.getElementById("analyticsPage").classList.add("active");
+          renderAnalytics();
+        } else if (text === "Subscriptions") {
+          document.getElementById("subscriptionsPage").classList.add("active");
+        } else if (text === "AI Insights") {
+          document.getElementById("aiPage").classList.add("active");
+        } else if (text === "Settings") {
+          document.getElementById("settingsPage").classList.add("active");
+        }
+      });
+    });
+
+    let analyticsChartInstance = null;
+
+    function renderAnalytics() {
+      const canvas = document.getElementById("analyticsChart");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (analyticsChartInstance) {
+        analyticsChartInstance.destroy();
+      }
+      analyticsChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: subs.map(s => s.name),
+          datasets: [{
+            label: 'Monthly Cost (₹)',
+            data: subs.map(s => s.cost),
+            backgroundColor: [
+              '#60a5fa',
+              '#22c55e',
+              '#f59e0b',
+              '#ef4444',
+              '#8b5cf6',
+              '#ec4899'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: 'Subscription Costs by Service',
+              color: '#e0e7ff'
+            }
+          },
+          scales: {
+            x: { ticks: { color: '#cbd5e1' } },
+            y: { ticks: { color: '#cbd5e1' } }
+          }
+        }
+      });
+    }
   </script>
 
 </body>
